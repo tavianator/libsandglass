@@ -38,3 +38,20 @@ sandglass_get_tsc:
         movq %rdi, %rbx
         ret
         .size sandglass_get_tsc, .-sandglass_get_tsc
+
+/*
+ * Return the granularity of the TSC
+ */
+
+/* unsigned int sandglass_tsc_loops(); */
+.globl sandglass_tsc_loops
+        .type sandglass_tsc_loops, @function
+sandglass_tsc_loops:
+        rdtsc                   /* Read time stamp counter */
+        movl %eax, %ecx
+.Lrdtsc:
+        rdtsc                   /* Read counter again */
+        subl %ecx, %eax
+        jz .Lrdtsc              /* If we got the same value, try again */
+        ret
+        .size sandglass_tsc_loops, .-sandglass_tsc_loops

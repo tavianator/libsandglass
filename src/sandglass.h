@@ -93,7 +93,7 @@ struct sandglass_t
   long grains;
 
   /* grains/resolution should give elapsed time in seconds */
-  long resolution;
+  double resolution;
 
   /*
    * Internal fields
@@ -140,19 +140,14 @@ int sandglass_elapse(sandglass_t *sandglass);
   do {                                                                         \
     routine;                                                                   \
     sandglass_begin(sandglass);                                                \
-    for ((sandglass)->i = 0; (sandglass)->i < (sandglass)->loops; ++i) {       \
+    for ((sandglass)->i = 0;                                                   \
+         (sandglass)->i < (sandglass)->loops;                                  \
+         ++(sandglass)->i) {                                                   \
       SANDGLASS_NO_UNROLL();                                                   \
       routine;                                                                 \
     }                                                                          \
     sandglass_elapse(sandglass);                                               \
   } while (0)
-
-/*
- * Low-level API
- */
-
-/* Read the time stamp counter */
-long sandglass_get_tsc();
 
 #ifdef __cplusplus
 }

@@ -19,39 +19,21 @@
  *************************************************************************/
 
 /*
- * Return the time stamp counter, and serialize the instruction
+ * Internal libsandglass API
  */
 
-        .text
-/* long sandglass_get_tsc(); */
-.globl sandglass_get_tsc
-        .type sandglass_get_tsc, @function
-sandglass_get_tsc:
-        pushl %ebx              /* Callee-save register, clobbered by cpuid */
-        pushl %esi
-        cpuid                   /* Serialize */
-        rdtsc                   /* Read time stamp counter */
-        movl %eax, %esi         /* Store tsc */
-        cpuid                   /* Serialize again */
-        movl %esi, %eax
-        popl %esi
-        popl %ebx
-        ret
-        .size sandglass_get_tsc, .-sandglass_get_tsc
+#ifndef SANDGLASS_IMPL_H_INCLUDED
+#define SANDGLASS_IMPL_H_INCLUDED
 
-/*
- * Return the granularity of the TSC
- */
+#include "sandglass.h"
 
-/* unsigned int sandglass_tsc_loops(); */
-.globl sandglass_tsc_loops
-        .type sandglass_tsc_loops, @function
-sandglass_tsc_loops:
-        rdtsc                   /* Read time stamp counter */
-        movl %eax, %ecx
-.Lrdtsc:
-        rdtsc                   /* Read counter again */
-        subl %ecx, %eax
-        jz .Lrdtsc              /* If we got the same value, try again */
-        ret
-        .size sandglass_tsc_loops, .-sandglass_tsc_loops
+#ifdef SANDGLASS_TSC
+/* Read the time stamp counter */
+long sandglass_get_tsc();
+/* Get the timing resolution of the TSC */
+double sandglass_tsc_resolution();
+/* Get the necessary number of loops for SANDGLASS_REALTICKS */
+unsigned int sandglass_tsc_loops();
+#endif
+
+#endif /* SANDGLASS_IMPL_H_INCLUDED */

@@ -19,10 +19,37 @@
  *************************************************************************/
 
 #include <sandglass.h>
+#include <unistd.h>
+#include <time.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 int
 main()
 {
+  sandglass_t sandglass;
+  sandglass_attributes_t min = { SANDGLASS_MONOTONIC, SANDGLASS_SYSTEM },
+                         max = { SANDGLASS_MONOTONIC, SANDGLASS_CPUTIME };
+  struct timespec tosleep = { .tv_sec = 0, .tv_nsec = 100000000 };
+
+  if (sandglass_create(&sandglass, &min, &max) != 0) {
+    perror("sandglass_create()");
+    return EXIT_FAILURE;
+  }
+
+  if (sandglass_begin(&sandglass) != 0) {
+    perror("sandglass_begin()");
+    return EXIT_FAILURE;
+  }
+  while (nanosleep(&tosleep, &tosleep) != 0);
+  if (sandglass_elapse(&sandglass) != 0) {
+    perror("sandglass_elapse()");
+    return EXIT_FAILURE;
+  }
+
+  printf("0.1 seconds timed by sandglass as %ld grains; %g s\n",
+         sandglass.grains,
+         sandglass.grains/sandglass.resolution);
+
   return EXIT_SUCCESS;
 }

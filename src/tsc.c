@@ -18,40 +18,22 @@
  * <http://www.gnu.org/licenses/>.                                       *
  *************************************************************************/
 
-/*
- * Return the time stamp counter, and serialize the instruction
- */
+#include "sandglass_impl.h"
+#include "sandglass.h"
+#include <time.h>
 
-        .text
-/* long sandglass_get_tsc(); */
-.globl sandglass_get_tsc
-        .type sandglass_get_tsc, @function
-sandglass_get_tsc:
-        pushl %ebx              /* Callee-save register, clobbered by cpuid */
-        pushl %esi
-        cpuid                   /* Serialize */
-        rdtsc                   /* Read time stamp counter */
-        movl %eax, %esi         /* Store tsc */
-        cpuid                   /* Serialize again */
-        movl %esi, %eax
-        popl %esi
-        popl %ebx
-        ret
-        .size sandglass_get_tsc, .-sandglass_get_tsc
+/* Gets the number of clock ticks per second */
+double
+sandglass_tsc_resolution()
+{
+  static long tsc = 0;
+  struct timespec ts = { .tv_sec = 0, .tv_nsec = 100000000 };
 
-/*
- * Return the granularity of the TSC
- */
+  if (tsc == 0) {
+    tsc = sandglass_get_tsc();
+    while (nanosleep(&ts, &ts) != 0);
+    tsc = sandglass_get_tsc() - tsc;
+  }
 
-/* unsigned int sandglass_tsc_loops(); */
-.globl sandglass_tsc_loops
-        .type sandglass_tsc_loops, @function
-sandglass_tsc_loops:
-        rdtsc                   /* Read time stamp counter */
-        movl %eax, %ecx
-.Lrdtsc:
-        rdtsc                   /* Read counter again */
-        subl %ecx, %eax
-        jz .Lrdtsc              /* If we got the same value, try again */
-        ret
-        .size sandglass_tsc_loops, .-sandglass_tsc_loops
+  return tsc*10.0;
+}
