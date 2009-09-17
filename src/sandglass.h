@@ -147,6 +147,13 @@ int sandglass_elapse(sandglass_t *sandglass);
     sandglass_elapse(sandglass);                                               \
   } while (0)
 
+/*
+ * Low-level API
+ */
+
+/* Read the time stamp counter */
+long sandglass_get_tsc();
+
 #ifdef __cplusplus
 }
 #endif
