@@ -82,7 +82,7 @@ struct sandglass_attributes_t
   sandglass_incrementation_t incrementation;
   sandglass_resolution_t     resolution;
 };
-typedef struct sandglass_attributes_t sandglass_attributes_t
+typedef struct sandglass_attributes_t sandglass_attributes_t;
 
 struct sandglass_t
 {
