@@ -26,6 +26,7 @@
 #define SANDGLASS_IMPL_H_INCLUDED
 
 #include "sandglass.h"
+#include <time.h>
 
 #ifdef SANDGLASS_TSC
 /* Read the time stamp counter */
@@ -35,5 +36,7 @@ double sandglass_tsc_resolution();
 /* Get the necessary number of loops for SANDGLASS_REALTICKS */
 unsigned int sandglass_tsc_loops();
 #endif
+
+long sandglass_timespec_grains(const struct timespec *ts);
 
 #endif /* SANDGLASS_IMPL_H_INCLUDED */

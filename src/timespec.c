@@ -21,46 +21,10 @@
 #include "sandglass_impl.h"
 #include "sandglass.h"
 #include <time.h>
-#include <unistd.h>
 
-/* Gets the number of clock ticks per second */
-double
-sandglass_tsc_resolution()
+/* Convert a timespec to grains */
+long
+sandglass_timespec_grains(const struct timespec *ts)
 {
-  static long tsc = 0, grains1, grains2;
-
-  int monotonic;
-  struct timespec ts;
-
-  if (tsc == 0) {
-    monotonic = sysconf(_SC_MONOTONIC_CLOCK) > 0;
-    if (monotonic) {
-      if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
-        return 0.0/0.0;
-    } else {
-      if (clock_gettime(CLOCK_REALTIME, &ts) != 0)
-        return 0.0/0.0;
-    }
-    tsc = sandglass_get_tsc();
-    grains1 = sandglass_timespec_grains(&ts);
-    grains2 = grains1;
-
-    while (((grains2 >= grains1) ? grains2 - grains1
-                                 : 2000000000L + (grains2 - grains1))
-           < 10000000L)
-    {
-      if (monotonic) {
-        if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
-          return 0.0/0.0;
-      } else {
-        if (clock_gettime(CLOCK_REALTIME, &ts) != 0)
-          return 0.0/0.0;
-      }
-      grains2 = sandglass_timespec_grains(&ts);
-    }
-
-    tsc = sandglass_get_tsc() - tsc;
-  }
-
-  return tsc*1.0e9/(grains2 - grains1);
+  return (ts->tv_sec%2L)*1000000000L + ts->tv_nsec;
 }
