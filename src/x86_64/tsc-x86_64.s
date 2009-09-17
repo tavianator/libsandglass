@@ -26,7 +26,7 @@
 /* long sandglass_get_tsc(); */
 .globl sandglass_get_tsc
         .type sandglass_get_tsc, @function
-ticks:
+sandglass_get_tsc:
         movq %rbx, %rdi         /* Callee-save register, clobbered by cpuid */
         cpuid                   /* Serialize */
         rdtsc                   /* Read time stamp counter */

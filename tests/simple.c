@@ -18,4 +18,11 @@
  * <http://www.gnu.org/licenses/>.                                       *
  *************************************************************************/
 
-#include "sandglass.h"
+#include <sandglass.h>
+#include <stdlib.h>
+
+int
+main()
+{
+  return EXIT_SUCCESS;
+}

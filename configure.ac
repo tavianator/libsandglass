@@ -45,5 +45,6 @@ AM_CONDITIONAL([X86_64], [echo $host_cpu | grep 'x86_64$' >/dev/null])
 dnl Generate Makefiles
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_FILES([Makefile
-                 src/Makefile])
+                 src/Makefile
+                 tests/Makefile])
 AC_OUTPUT

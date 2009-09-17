@@ -19,6 +19,6 @@
 #########################################################################
 
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = src
+SUBDIRS = src tests
 
 EXTRA_DIST = autogen.sh
