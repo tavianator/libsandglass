@@ -17,10 +17,10 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>. ##
 ###########################################################################
 
-check_PROGRAMS = simple-test
+check_PROGRAMS = introspective-system-test
 TESTS          = $(check_PROGRAMS)
 
 INCLUDES = -I../src
 
-simple_test_SOURCES = simple.c
-simple_test_LDADD   = ../src/libsandglass.la
+introspective_system_test_SOURCES = introspective-system.c
+introspective_system_test_LDADD   = ../src/libsandglass.la

@@ -28,11 +28,10 @@ int
 main()
 {
   sandglass_t sandglass;
-  sandglass_attributes_t min = { SANDGLASS_MONOTONIC, SANDGLASS_SYSTEM },
-                         max = { SANDGLASS_MONOTONIC, SANDGLASS_CPUTIME };
+  sandglass_attributes_t attr = { SANDGLASS_INTROSPECTIVE, SANDGLASS_SYSTEM };
   struct timespec tosleep = { .tv_sec = 0, .tv_nsec = 100000000 };
 
-  if (sandglass_create(&sandglass, &min, &max) != 0) {
+  if (sandglass_create(&sandglass, &attr, &attr) != 0) {
     perror("sandglass_create()");
     return EXIT_FAILURE;
   }
@@ -46,10 +45,6 @@ main()
     perror("sandglass_elapse()");
     return EXIT_FAILURE;
   }
-
-  printf("0.1 seconds timed by sandglass as %ld grains; %g s\n",
-         sandglass.grains,
-         sandglass.grains/sandglass.resolution);
 
   return EXIT_SUCCESS;
 }

@@ -13,6 +13,9 @@
 Makefile
 Makefile.in
 
+# Test executables
+/tests/*-test
+
 # Files and folders created by libtool
 .libs/
 *.l[oa]
