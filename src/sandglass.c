@@ -186,7 +186,7 @@ sandglass_elapse(sandglass_t *sandglass)
   sandglass->grains -= oldgrains;
   /* Magical correction for timespec-based grains */
   if (sandglass->grains < 0)
-    sandglass->grains += 2000000000L;
+    sandglass->grains += sandglass->adjustment;
   sandglass->grains /= sandglass->loops;
 
   return 0;
@@ -226,7 +226,8 @@ sandglass_real_gettime(sandglass_t *sandglass)
             if (clock_gettime(CLOCK_REALTIME, &ts) != 0)
               return -1;
           }
-          sandglass->grains = sandglass_timespec_grains(&ts);
+          sandglass->grains     = sandglass_timespec_grains(&ts);
+          sandglass->adjustment = 2000000000L;
           break;
 
         default:
@@ -249,7 +250,8 @@ sandglass_real_gettime(sandglass_t *sandglass)
               return -1;
           } else
             return -1;
-          sandglass->grains = sandglass_timespec_grains(&ts);
+          sandglass->grains     = sandglass_timespec_grains(&ts);
+          sandglass->adjustment = 2000000000L;
           break;
 
         case SANDGLASS_SYSTEM:

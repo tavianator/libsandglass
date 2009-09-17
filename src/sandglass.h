@@ -99,6 +99,9 @@ struct sandglass_t
    * Internal fields
    */
 
+  /* Adjustment to be added for negative (i.e. overflowed) grains counts */
+  long adjustment;
+
   /* For SANDGLASS_TICKS looping support */
   unsigned int i, loops;
 };
