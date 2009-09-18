@@ -37,6 +37,4 @@ double sandglass_tsc_resolution();
 unsigned int sandglass_tsc_loops();
 #endif
 
-long sandglass_timespec_grains(const struct timespec *ts);
-
 #endif /* SANDGLASS_IMPL_H_INCLUDED */

@@ -226,8 +226,8 @@ sandglass_real_gettime(sandglass_t *sandglass)
             if (clock_gettime(CLOCK_REALTIME, &ts) != 0)
               return -1;
           }
-          sandglass->grains     = sandglass_timespec_grains(&ts);
-          sandglass->adjustment = 2000000000L;
+          sandglass->grains     = ts.tv_nsec;
+          sandglass->adjustment = 1000000000L;
           break;
 
         default:
@@ -250,8 +250,8 @@ sandglass_real_gettime(sandglass_t *sandglass)
               return -1;
           } else
             return -1;
-          sandglass->grains     = sandglass_timespec_grains(&ts);
-          sandglass->adjustment = 2000000000L;
+          sandglass->grains     = ts.tv_nsec;
+          sandglass->adjustment = 1000000000L;
           break;
 
         case SANDGLASS_SYSTEM:

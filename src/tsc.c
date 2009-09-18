@@ -46,7 +46,7 @@ sandglass_tsc_resolution()
     grains2 = grains1;
 
     while (((grains2 >= grains1) ? grains2 - grains1
-                                 : 2000000000L + (grains2 - grains1))
+                                 : 1000000000L + (grains2 - grains1))
            < 10000000L)
     {
       if (monotonic) {
@@ -56,7 +56,7 @@ sandglass_tsc_resolution()
         if (clock_gettime(CLOCK_REALTIME, &ts) != 0)
           return 0.0/0.0;
       }
-      grains2 = sandglass_timespec_grains(&ts);
+      grains2 = ts.tv_nsec;
     }
 
     tsc = sandglass_get_tsc() - tsc;

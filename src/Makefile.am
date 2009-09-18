@@ -24,7 +24,6 @@ nobase_include_HEADERS = sandglass.h
 libsandglass_la_SOURCES    = sandglass.h                                       \
                              sandglass_impl.h                                  \
                              sandglass.c                                       \
-                             timespec.c                                        \
                              tsc.c
 
 if X86
