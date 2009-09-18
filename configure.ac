@@ -41,18 +41,21 @@ AC_CANONICAL_HOST
 
 if echo $host_cpu | grep '86$' 2>&1 >/dev/null
 then
-  arch_x86="true"
-  AC_DEFINE([SANDGLASS_TSC])
+  arch_x86=1
+  tsc=1
 fi
 
 if echo $host_cpu | grep 'x86_64$' 2>&1 >/dev/null
 then
-  arch_x86_64="true"
-  AC_DEFINE([SANDGLASS_TSC])
+  arch_x86_64=1
+  tsc=1
 fi
 
 AM_CONDITIONAL([X86], [test "$arch_x86"])
 AM_CONDITIONAL([X86_64], [test "$arch_x86_64"])
+
+AC_DEFINE([SANDGLASS_TSC], ["$tsc"])
+AM_CONDITIONAL([TSC], [test "$tsc"])
 
 dnl Generate Makefiles
 AC_CONFIG_MACRO_DIR([m4])

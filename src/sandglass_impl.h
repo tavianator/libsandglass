@@ -37,4 +37,10 @@ double sandglass_tsc_resolution();
 unsigned int sandglass_tsc_loops();
 #endif
 
+void sandglass_get_currtime(struct timespec *ts);
+void sandglass_timespec_add(struct timespec *ts, const struct timespec *d);
+void sandglass_timespec_sub(struct timespec *ts, const struct timespec *d);
+int  sandglass_timespec_cmp(const struct timespec *a, const struct timespec *b);
+void sandglass_spin(struct timespec *ts);
+
 #endif /* SANDGLASS_IMPL_H_INCLUDED */

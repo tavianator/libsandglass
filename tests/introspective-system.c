@@ -18,7 +18,8 @@
  * <http://www.gnu.org/licenses/>.                                       *
  *************************************************************************/
 
-#include <sandglass.h>
+#include "../src/sandglass_impl.h"
+#include "../src/sandglass.h"
 #include <unistd.h>
 #include <time.h>
 #include <stdlib.h>
@@ -29,22 +30,20 @@ main()
 {
   sandglass_t sandglass;
   sandglass_attributes_t attr = { SANDGLASS_INTROSPECTIVE, SANDGLASS_SYSTEM };
-  struct timespec tosleep = { .tv_sec = 0, .tv_nsec = 100000000 };
+  struct timespec tosleep;
 
   if (sandglass_create(&sandglass, &attr, &attr) != 0) {
     perror("sandglass_create()");
     return EXIT_FAILURE;
   }
 
-  if (sandglass_begin(&sandglass) != 0) {
-    perror("sandglass_begin()");
-    return EXIT_FAILURE;
-  }
-  while (nanosleep(&tosleep, &tosleep) != 0);
-  if (sandglass_elapse(&sandglass) != 0) {
-    perror("sandglass_elapse()");
-    return EXIT_FAILURE;
-  }
+  sandglass_bench(&sandglass, {
+    tosleep.tv_sec = 0;
+    tosleep.tv_nsec = 100000000L;
+    sandglass_spin(&tosleep);
+  });
+
+  printf("%g\n", sandglass.grains/sandglass.resolution);
 
   return EXIT_SUCCESS;
 }
