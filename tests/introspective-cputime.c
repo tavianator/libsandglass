@@ -30,7 +30,7 @@ main()
 {
   sandglass_t sandglass;
   sandglass_attributes_t attr = { SANDGLASS_INTROSPECTIVE, SANDGLASS_CPUTIME };
-  struct timespec tosleep = { .tv_sec = 0, .tv_nsec = 100000000L };
+  struct timespec tosleep = { .tv_sec = 0, .tv_nsec = 111111111L };
 
   if (sandglass_create(&sandglass, &attr, &attr) != 0) {
     perror("sandglass_create()");
