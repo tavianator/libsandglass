@@ -30,18 +30,14 @@ main()
 {
   sandglass_t sandglass;
   sandglass_attributes_t attr = { SANDGLASS_MONOTONIC, SANDGLASS_SYSTEM };
-  struct timespec tosleep;
+  struct timespec tosleep = { .tv_sec = 0, .tv_nsec = 100000000L };
 
   if (sandglass_create(&sandglass, &attr, &attr) != 0) {
     perror("sandglass_create()");
     return EXIT_FAILURE;
   }
 
-  sandglass_bench(&sandglass, {
-    tosleep.tv_sec = 0;
-    tosleep.tv_nsec = 100000000L;
-    sandglass_spin(&tosleep);
-  });
+  sandglass_bench(&sandglass, sandglass_spin(&tosleep));
 
   printf("%g\n", sandglass.grains/sandglass.resolution);
 

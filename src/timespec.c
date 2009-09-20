@@ -91,7 +91,7 @@ sandglass_timespec_cmp(const struct timespec *a, const struct timespec *b)
 
 /* Spins for the time interval specified by ts */
 void
-sandglass_spin(struct timespec *ts)
+sandglass_spin(const struct timespec *ts)
 {
   struct timespec curr, until;
   sandglass_get_currtime(&curr);
@@ -102,8 +102,4 @@ sandglass_spin(struct timespec *ts)
   do {
     sandglass_get_currtime(&curr);
   } while (sandglass_timespec_cmp(&curr, &until) < 0);
-
-  /* Adjust ts to the time actually waited */
-  sandglass_timespec_sub(&curr, &until);
-  sandglass_timespec_add(ts, &curr);
 }

@@ -29,11 +29,24 @@ sandglass_tsc_resolution()
 {
   static long tsc = 0;
   static struct timespec ts = { .tv_sec = 0, .tv_nsec = 10000000L };
+  struct timespec curr, until;
 
   if (tsc == 0) {
+    sandglass_get_currtime(&curr);
+    until = curr;
+    sandglass_timespec_add(&until, &ts);
     tsc = sandglass_get_tsc();
-    sandglass_spin(&ts);
+
+    /* Spin */
+    do {
+      sandglass_get_currtime(&curr);
+    } while (sandglass_timespec_cmp(&curr, &until) < 0);
+
     tsc = sandglass_get_tsc() - tsc;
+
+    /* Adjust ts to the time actually waited */
+    sandglass_timespec_sub(&curr, &until);
+    sandglass_timespec_add(&ts, &curr);
   }
 
   return tsc*1.0e9/ts.tv_nsec;
