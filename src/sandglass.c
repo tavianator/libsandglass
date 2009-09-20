@@ -179,15 +179,25 @@ int
 sandglass_elapse(sandglass_t *sandglass)
 {
   long oldgrains = sandglass->grains;
+  sandglass_t baseline;
 
   if (sandglass_real_gettime(sandglass) != 0)
     return -1;
 
   sandglass->grains -= oldgrains;
-  /* Magical correction for timespec-based grains */
   if (sandglass->grains < 0)
+    /* Magical correction for timespec-based grains */
     sandglass->grains += sandglass->adjustment;
-  sandglass->grains /= sandglass->loops;
+
+  if (sandglass->attributes.resolution == SANDGLASS_REALTICKS) {
+    baseline.attributes.incrementation = SANDGLASS_MONOTONIC;
+    baseline.attributes.resolution     = SANDGLASS_CPUTIME;
+    baseline.loops = sandglass->loops;
+
+    sandglass_bench(&baseline, { });
+    sandglass->grains -= baseline.grains;
+    sandglass->grains /= sandglass->loops;
+  }
 
   return 0;
 }
