@@ -17,10 +17,26 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>. ##
 ###########################################################################
 
-check_PROGRAMS = introspective-system-test
+check_PROGRAMS = introspective-system-test                                     \
+                 introspective-cputime-test                                    \
+                 monotonic-system-test                                         \
+                 monotonic-cputime-test                                        \
+                 monotonic-realticks-test
 TESTS          = $(check_PROGRAMS)
 
 INCLUDES = -I../src
 
 introspective_system_test_SOURCES = introspective-system.c
 introspective_system_test_LDADD   = ../src/libsandglass.la
+
+introspective_cputime_test_SOURCES = introspective-cputime.c
+introspective_cputime_test_LDADD   = ../src/libsandglass.la
+
+monotonic_system_test_SOURCES = monotonic-system.c
+monotonic_system_test_LDADD   = ../src/libsandglass.la
+
+monotonic_cputime_test_SOURCES = monotonic-cputime.c
+monotonic_cputime_test_LDADD   = ../src/libsandglass.la
+
+monotonic_realticks_test_SOURCES = monotonic-realticks.c
+monotonic_realticks_test_LDADD   = ../src/libsandglass.la
