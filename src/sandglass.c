@@ -189,16 +189,6 @@ sandglass_elapse(sandglass_t *sandglass)
     /* Magical correction for timespec-based grains */
     sandglass->grains += sandglass->adjustment;
 
-  if (sandglass->attributes.resolution == SANDGLASS_REALTICKS) {
-    baseline.attributes.incrementation = SANDGLASS_MONOTONIC;
-    baseline.attributes.resolution     = SANDGLASS_CPUTIME;
-    baseline.loops = sandglass->loops;
-
-    sandglass_bench(&baseline, { });
-    sandglass->grains -= baseline.grains;
-    sandglass->grains /= sandglass->loops;
-  }
-
   return 0;
 }
 
@@ -213,13 +203,6 @@ sandglass_real_gettime(sandglass_t *sandglass)
     case SANDGLASS_MONOTONIC:
       switch (sandglass->attributes.resolution) {
         case SANDGLASS_REALTICKS:
-#ifdef SANDGLASS_TSC
-          sandglass->grains = sandglass_get_tsc();
-          break;
-#else
-          return -1;
-#endif
-
         case SANDGLASS_CPUTIME:
 #ifdef SANDGLASS_TSC
           sandglass->grains = sandglass_get_tsc();

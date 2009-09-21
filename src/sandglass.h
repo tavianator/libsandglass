@@ -102,8 +102,12 @@ struct sandglass_t
   /* Adjustment to be added for negative (i.e. overflowed) grains counts */
   long adjustment;
 
-  /* For SANDGLASS_TICKS looping support */
+  /* For SANDGLASS_REALTICKS looping support */
   unsigned int i, loops;
+
+  /* A field used by sandglass_bench() to store the overhead of
+     sandglass_begin()/_elapse(), and of looping */
+  long baseline;
 };
 typedef struct sandglass_t sandglass_t;
 
@@ -141,7 +145,23 @@ int sandglass_elapse(sandglass_t *sandglass);
  */
 #define sandglass_bench(sandglass, routine)                                    \
   do {                                                                         \
+    /* Warm up the cache for these functions */                                \
+    sandglass_begin(sandglass);                                                \
+    sandglass_elapse(sandglass);                                               \
+                                                                               \
+    /* Time an empty loop for our baseline */                                  \
+    sandglass_begin(sandglass);                                                \
+    for ((sandglass)->i = 0;                                                   \
+         (sandglass)->i < (sandglass)->loops;                                  \
+         ++(sandglass)->i) {                                                   \
+      SANDGLASS_NO_UNROLL();                                                   \
+    }                                                                          \
+    sandglass_elapse(sandglass);                                               \
+    (sandglass)->baseline = (sandglass)->grains;                               \
+                                                                               \
+    /* Warm up the cache for our routine */                                    \
     routine;                                                                   \
+    /* Time our routine in a loop */                                           \
     sandglass_begin(sandglass);                                                \
     for ((sandglass)->i = 0;                                                   \
          (sandglass)->i < (sandglass)->loops;                                  \
@@ -150,6 +170,10 @@ int sandglass_elapse(sandglass_t *sandglass);
       routine;                                                                 \
     }                                                                          \
     sandglass_elapse(sandglass);                                               \
+                                                                               \
+    /* Subtract the baseline and divide by the loop count */                   \
+    (sandglass)->grains -= (sandglass)->baseline;                              \
+    (sandglass)->grains /= (sandglass)->loops;                                 \
   } while (0)
 
 #ifdef __cplusplus
