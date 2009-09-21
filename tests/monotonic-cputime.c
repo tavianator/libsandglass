@@ -39,7 +39,7 @@ main()
 
   sandglass_bench(&sandglass, sandglass_spin(&tosleep));
 
-  printf("%g\n", sandglass.grains/sandglass.resolution);
+  printf("%.15g\n", sandglass.grains/sandglass.resolution);
 
   return EXIT_SUCCESS;
 }
