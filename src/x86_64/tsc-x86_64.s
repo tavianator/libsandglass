@@ -28,11 +28,13 @@
         .type sandglass_get_tsc, @function
 sandglass_get_tsc:
         movq %rbx, %rdi         /* Callee-save register, clobbered by cpuid */
+        xorl %eax, %eax         /* Make cpuid do a consistent operation */
         cpuid                   /* Serialize */
         rdtsc                   /* Read time stamp counter */
         shlq $32, %rdx
         orq %rdx, %rax
         movq %rax, %rsi
+        xorl %eax, %eax
         cpuid                   /* Serialize again */
         movq %rsi, %rax
         movq %rdi, %rbx

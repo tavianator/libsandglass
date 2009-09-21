@@ -29,9 +29,11 @@
 sandglass_get_tsc:
         pushl %ebx              /* Callee-save register, clobbered by cpuid */
         pushl %esi
+        xorl %eax, %eax         /* Make cpuid do a consistent operation */
         cpuid                   /* Serialize */
         rdtsc                   /* Read time stamp counter */
         movl %eax, %esi         /* Store tsc */
+        xorl %eax, %eax
         cpuid                   /* Serialize again */
         movl %esi, %eax
         popl %esi
