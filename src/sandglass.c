@@ -104,19 +104,10 @@ sandglass_real_create(sandglass_t *sandglass,
   switch (attr->incrementation) {
     case SANDGLASS_MONOTONIC:
       switch (attr->resolution) {
-        case SANDGLASS_REALTICKS:
-#ifdef SANDGLASS_TSC
-          sandglass->resolution = sandglass_tsc_resolution();
-          sandglass->loops      = sandglass_tsc_loops();
-          break;
-#else
-          return -1;
-#endif
-
         case SANDGLASS_CPUTIME:
 #ifdef SANDGLASS_TSC
           sandglass->resolution = sandglass_tsc_resolution();
-          sandglass->loops      = 1;
+          sandglass->loops      = sandglass_tsc_loops();
           break;
 #else
           return -1;
@@ -134,10 +125,6 @@ sandglass_real_create(sandglass_t *sandglass,
 
     case SANDGLASS_INTROSPECTIVE:
       switch (attr->resolution) {
-        case SANDGLASS_REALTICKS:
-          /* No such thing as an introspective raw TSC */
-          return -1;
-
         case SANDGLASS_CPUTIME:
           if (sysconf(_SC_THREAD_CPUTIME) > 0 || sysconf(_SC_CPUTIME) > 0) {
             sandglass->resolution = 1e9;
@@ -202,7 +189,6 @@ sandglass_real_gettime(sandglass_t *sandglass)
   switch (sandglass->attributes.incrementation) {
     case SANDGLASS_MONOTONIC:
       switch (sandglass->attributes.resolution) {
-        case SANDGLASS_REALTICKS:
         case SANDGLASS_CPUTIME:
 #ifdef SANDGLASS_TSC
           sandglass->grains = sandglass_get_tsc();
@@ -230,10 +216,6 @@ sandglass_real_gettime(sandglass_t *sandglass)
 
     case SANDGLASS_INTROSPECTIVE:
       switch (sandglass->attributes.resolution) {
-        case SANDGLASS_REALTICKS:
-          /* No such thing as an introspective raw TSC */
-          return -1;
-
         case SANDGLASS_CPUTIME:
           if (sysconf(_SC_THREAD_CPUTIME) > 0) {
             if (clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts) != 0)

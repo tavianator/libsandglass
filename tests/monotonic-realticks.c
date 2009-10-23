@@ -30,14 +30,14 @@ int
 main()
 {
   sandglass_t sandglass;
-  sandglass_attributes_t attr = { SANDGLASS_MONOTONIC, SANDGLASS_REALTICKS };
+  sandglass_attributes_t attr = { SANDGLASS_MONOTONIC, SANDGLASS_CPUTIME };
 
   if (sandglass_create(&sandglass, &attr, &attr) != 0) {
     perror("sandglass_create()");
     return EXIT_FAILURE;
   }
 
-  sandglass_bench(&sandglass, sandglass_get_tsc());
+  sandglass_bench_fine(&sandglass, sandglass_get_tsc());
 
   printf("%ld\n", sandglass.grains);
 

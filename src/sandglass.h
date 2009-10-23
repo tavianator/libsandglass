@@ -26,6 +26,8 @@
 #ifndef SANDGLASS_H_INCLUDED
 #define SANDGLASS_H_INCLUDED
 
+#include <assert.h>
+
 #ifdef __cplusplus
 /* We've been included from a C++ file; mark everything here as extern "C" */
 extern "C" {
@@ -65,14 +67,7 @@ enum sandglass_resolution_t
    * portable.  Uses the CLOCK_THREAD_CPUTIME_ID clock for
    * SANDGLASS_INTROSPECTIVE mode, and the raw TSC for SANDGLASS_MONOTONIC.
    */
-  SANDGLASS_CPUTIME,
-
-  /*
-   * Get timing information accurate to within one CPU clock cycle - requires
-   * some looping and other trickery to account for TSCs which are not accurate
-   * to within one clock cycle.  Not valid with SANDGLASS_INTROSPECTIVE.
-   */
-  SANDGLASS_REALTICKS
+  SANDGLASS_CPUTIME
 };
 typedef enum sandglass_resolution_t sandglass_resolution_t;
 
@@ -134,16 +129,18 @@ int sandglass_elapse(sandglass_t *sandglass);
 #define SANDGLASS_NO_UNROLL() __asm__ __volatile__ ("")
 
 /*
- * Macro to facilitate correct benchmarking of blocks of code.  May be called
+ * Macros to facilitate correct benchmarking of blocks of code.  May be called
  * like so:
- *   sandglass_bench(&sandglass, f(x))
+ *   sandglass_bench*(&sandglass, f(x))
  * or like so:
- *   sandglass_bench(&sandglass, {
+ *   sandglass_bench*(&sandglass, {
  *     f(x);
  *     g(x);
  *   });
  */
-#define sandglass_bench(sandglass, routine)                                    \
+
+/* Provides single clock cycle resolution in some cases */
+#define sandglass_bench_fine(sandglass, routine)                               \
   do {                                                                         \
     /* Warm up the cache for these functions */                                \
     sandglass_begin(sandglass);                                                \
@@ -161,6 +158,7 @@ int sandglass_elapse(sandglass_t *sandglass);
                                                                                \
     /* Warm up the cache for our routine */                                    \
     routine;                                                                   \
+                                                                               \
     /* Time our routine in a loop */                                           \
     sandglass_begin(sandglass);                                                \
     for ((sandglass)->i = 0;                                                   \
@@ -168,12 +166,58 @@ int sandglass_elapse(sandglass_t *sandglass);
          ++(sandglass)->i) {                                                   \
       SANDGLASS_NO_UNROLL();                                                   \
       routine;                                                                 \
+      SANDGLASS_NO_UNROLL();                                                   \
     }                                                                          \
     sandglass_elapse(sandglass);                                               \
                                                                                \
     /* Subtract the baseline and divide by the loop count */                   \
     (sandglass)->grains -= (sandglass)->baseline;                              \
     (sandglass)->grains /= (sandglass)->loops;                                 \
+  } while (0)
+
+/* General high resolution timer */
+#define sandglass_bench(sandglass, routine)                                    \
+  do {                                                                         \
+    /* Warm up the cache for these functions */                                \
+    sandglass_begin(sandglass);                                                \
+    sandglass_elapse(sandglass);                                               \
+                                                                               \
+    /* Time an empty routine for our baseline */                               \
+    sandglass_begin(sandglass);                                                \
+    sandglass_elapse(sandglass);                                               \
+    (sandglass)->baseline = (sandglass)->grains;                               \
+                                                                               \
+    /* Warm up the cache for our routine */                                    \
+    routine;                                                                   \
+                                                                               \
+    /* Time the routine */                                                     \
+    sandglass_begin(sandglass);                                                \
+    routine;                                                                   \
+    sandglass_elapse(sandglass);                                               \
+                                                                               \
+    /* Subtract the baseline */                                                \
+    (sandglass)->grains -= (sandglass)->baseline;                              \
+  } while (0)
+
+/* Only executes routine once - useful if routine has side-effects */
+#define sandglass_bench_noprecache(sandglass, routine)                         \
+  do {                                                                         \
+    /* Warm up the cache for these functions */                                \
+    sandglass_begin(sandglass);                                                \
+    sandglass_elapse(sandglass);                                               \
+                                                                               \
+    /* Time an empty loop for our baseline */                                  \
+    sandglass_begin(sandglass);                                                \
+    sandglass_elapse(sandglass);                                               \
+    (sandglass)->baseline = (sandglass)->grains;                               \
+                                                                               \
+    /* Time the routine */                                                     \
+    sandglass_begin(sandglass);                                                \
+    routine;                                                                   \
+    sandglass_elapse(sandglass);                                               \
+                                                                               \
+    /* Subtract the baseline */                                                \
+    (sandglass)->grains -= (sandglass)->baseline;                              \
   } while (0)
 
 #ifdef __cplusplus
