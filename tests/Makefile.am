@@ -21,7 +21,8 @@ check_PROGRAMS = introspective-system-test                                     \
                  introspective-cputime-test                                    \
                  monotonic-system-test                                         \
                  monotonic-cputime-test                                        \
-                 monotonic-realticks-test
+                 monotonic-realticks-test                                      \
+                 noprecache-test
 TESTS          = $(check_PROGRAMS)
 
 INCLUDES = -I../src
@@ -40,3 +41,6 @@ monotonic_cputime_test_LDADD   = ../src/libsandglass.la
 
 monotonic_realticks_test_SOURCES = monotonic-realticks.c
 monotonic_realticks_test_LDADD   = ../src/libsandglass.la
+
+noprecache_test_SOURCES = noprecache.c
+noprecache_test_LDADD   = ../src/libsandglass.la
