@@ -166,7 +166,6 @@ int
 sandglass_elapse(sandglass_t *sandglass)
 {
   long oldgrains = sandglass->grains;
-  sandglass_t baseline;
 
   if (sandglass_real_gettime(sandglass) != 0)
     return -1;
