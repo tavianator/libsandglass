@@ -39,3 +39,6 @@ if X86_64
 endif
 
 libsandglass_la_LIBADD     = -lrt
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libsandglass.pc

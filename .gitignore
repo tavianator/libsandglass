@@ -16,6 +16,9 @@ Makefile.in
 # Test executables
 /tests/*-test
 
+# pkg-config files
+*.pc
+
 # Files and folders created by libtool
 .libs/
 *.l[oa]

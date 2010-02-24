@@ -16,7 +16,7 @@ dnl You should have received a copy of the GNU Lesser General Public
 dnl License along with this program.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 
-AC_PREREQ(2.63)
+AC_PREREQ(2.65)
 AC_INIT(The Sandglass Library, 0.0, tavianator@gmail.com, libsandglass)
 AM_INIT_AUTOMAKE(libsandglass, 0.0)
 
@@ -61,5 +61,6 @@ dnl Generate Makefiles
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_FILES([Makefile
                  src/Makefile
+                 src/libsandglass.pc
                  tests/Makefile])
 AC_OUTPUT
