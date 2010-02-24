@@ -13,11 +13,12 @@
 Makefile
 Makefile.in
 
-# Test executables
-/tests/*-test
-
 # pkg-config files
 *.pc
+
+# Files created by `make check'
+/tests/*-test
+/tests/*.log
 
 # Files and folders created by libtool
 .libs/
