@@ -32,7 +32,7 @@ main()
   sandglass_t sandglass;
 
   if (sandglass_init_monotonic(&sandglass, SANDGLASS_CPUTIME) != 0) {
-    perror("sandglass_create()");
+    perror("sandglass_init_monotonic()");
     return EXIT_FAILURE;
   }
 

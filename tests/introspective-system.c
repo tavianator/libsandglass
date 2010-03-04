@@ -32,7 +32,7 @@ main()
   struct timespec tosleep = { .tv_sec = 0, .tv_nsec = 111111111L };
 
   if (sandglass_init_introspective(&sandglass, SANDGLASS_SYSTEM) != 0) {
-    perror("sandglass_create()");
+    perror("sandglass_init_introspective()");
     return EXIT_FAILURE;
   }
 
