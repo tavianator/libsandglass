@@ -26,8 +26,6 @@
 #ifndef SANDGLASS_H_INCLUDED
 #define SANDGLASS_H_INCLUDED
 
-#include <assert.h>
-
 #ifdef __cplusplus
 /* We've been included from a C++ file; mark everything here as extern "C" */
 extern "C" {
