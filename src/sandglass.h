@@ -86,8 +86,8 @@ typedef struct sandglass_t
   /* Adjustment to be added for negative (i.e. overflowed) grains counts */
   long adjustment;
 
-  /* For SANDGLASS_REALTICKS looping support */
-  unsigned int i, loops;
+  /* For sandglass_bench_fine() looping support */
+  int i, loops;
 
   /* A field used by sandglass_bench() to store the overhead of
      sandglass_begin()/_elapse(), and of looping */
