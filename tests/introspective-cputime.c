@@ -29,17 +29,16 @@ int
 main()
 {
   sandglass_t sandglass;
-  sandglass_attributes_t attr = { SANDGLASS_INTROSPECTIVE, SANDGLASS_CPUTIME };
   struct timespec tosleep = { .tv_sec = 0, .tv_nsec = 111111111L };
 
-  if (sandglass_create(&sandglass, &attr, &attr) != 0) {
+  if (sandglass_init_introspective(&sandglass, SANDGLASS_CPUTIME) != 0) {
     perror("sandglass_create()");
     return EXIT_FAILURE;
   }
 
   sandglass_bench(&sandglass, sandglass_spin(&tosleep));
 
-  printf("%.15g\n", sandglass.grains/sandglass.resolution);
+  printf("%.15g\n", sandglass.grains/sandglass.freq);
 
   return EXIT_SUCCESS;
 }

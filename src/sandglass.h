@@ -31,8 +31,24 @@
 extern "C" {
 #endif
 
-/* A type to represent a clock's time measurement attributes */
-enum sandglass_incrementation_t
+/* A type to represent a clock's timing resolution */
+typedef enum sandglass_resolution_t
+{
+  /*
+   * Rely on the kernel to provide time information; less precise, more
+   * portable
+   */
+  SANDGLASS_SYSTEM,
+
+  /*
+   * Get timing information directly from the processor; more precise, less
+   * portable
+   */
+  SANDGLASS_CPUTIME
+} sandglass_resolution_t;
+
+/* An internal type to represent a clock's time measurement attributes */
+typedef enum sandglass_incrementation_t
 {
   /*
    * A clock which only increments during the current process's execution.  Less
@@ -48,45 +64,20 @@ enum sandglass_incrementation_t
    * while being timed.
    */
   SANDGLASS_MONOTONIC
-};
-typedef enum sandglass_incrementation_t sandglass_incrementation_t;
+} sandglass_incrementation_t;
 
-/* A type to represent a clock's timing resolution */
-enum sandglass_resolution_t
-{
-  /*
-   * Rely on the kernel to provide time information; less precise, more
-   * portable.  Uses times().
-   */
-  SANDGLASS_SYSTEM,
-
-  /*
-   * Get timing information directly from the processor; more precise, less
-   * portable.  Uses the CLOCK_THREAD_CPUTIME_ID clock for
-   * SANDGLASS_INTROSPECTIVE mode, and the raw TSC for SANDGLASS_MONOTONIC.
-   */
-  SANDGLASS_CPUTIME
-};
-typedef enum sandglass_resolution_t sandglass_resolution_t;
-
-/* Attributes of a clock */
-struct sandglass_attributes_t
-{
-  sandglass_incrementation_t incrementation;
-  sandglass_resolution_t     resolution;
-};
-typedef struct sandglass_attributes_t sandglass_attributes_t;
-
-struct sandglass_t
+/* An high resolution timer */
+typedef struct sandglass_t
 {
   /* The attributes of the clock */
-  sandglass_attributes_t attributes;
+  sandglass_incrementation_t incrementation;
+  sandglass_resolution_t     resolution;
 
   /* Units of time which have passed */
   long grains;
 
-  /* grains/resolution should give elapsed time in seconds */
-  double resolution;
+  /* grains/freq should give elapsed time in seconds */
+  double freq;
 
   /*
    * Internal fields
@@ -101,24 +92,13 @@ struct sandglass_t
   /* A field used by sandglass_bench() to store the overhead of
      sandglass_begin()/_elapse(), and of looping */
   long baseline;
-};
-typedef struct sandglass_t sandglass_t;
+} sandglass_t;
 
-/*
- * Creates a timer with at least the precision of `min', and at most the
- * precision of `max'.  Precisions are compared first by incrementation type:
- * all monotonic timers are considered more precise than introspective timers.
- * Then, higher resolution timers take precidence.
- *
- * If `min' is NULL, it defaults to { SANDGLASS_INTROSPECTIVE,
- * SANDGLASS_SYSTEM }.
- *
- * If `max' is NULL, it defaults to at least `min', but not less than
- * { SANDGLASS_INTROSPECTIVE, SANDGLASS_CPUTIME }.
- */
-int sandglass_create(sandglass_t *sandglass,
-                     const sandglass_attributes_t *min,
-                     const sandglass_attributes_t *max);
+/* Create a timer */
+int sandglass_init_introspective(sandglass_t *sandglass,
+                                 sandglass_resolution_t res);
+int sandglass_init_monotonic(sandglass_t *sandglass,
+                             sandglass_resolution_t res);
 
 int sandglass_begin(sandglass_t *sandglass);
 int sandglass_elapse(sandglass_t *sandglass);

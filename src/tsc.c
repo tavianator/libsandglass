@@ -25,7 +25,7 @@
 
 /* Gets the number of clock ticks per second */
 double
-sandglass_tsc_resolution()
+sandglass_tsc_freq()
 {
   static long tsc = 0;
   static struct timespec ts = { .tv_sec = 0, .tv_nsec = 10000000L };

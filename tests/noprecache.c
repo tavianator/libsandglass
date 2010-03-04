@@ -31,10 +31,9 @@ main()
 {
   int i = 0;
   sandglass_t sandglass;
-  sandglass_attributes_t attr = { SANDGLASS_MONOTONIC, SANDGLASS_CPUTIME };
   struct timespec tosleep = { .tv_sec = 0, .tv_nsec = 111111111L };
 
-  if (sandglass_create(&sandglass, &attr, &attr) != 0) {
+  if (sandglass_init_monotonic(&sandglass, SANDGLASS_SYSTEM) != 0) {
     perror("sandglass_create()");
     return EXIT_FAILURE;
   }
@@ -49,7 +48,7 @@ main()
             "sandglass_bench_noprecache() evaluated routine %d times!\n", i);
   }
 
-  printf("%.15g\n", sandglass.grains/sandglass.resolution);
+  printf("%.15g\n", sandglass.grains/sandglass.freq);
 
   return EXIT_SUCCESS;
 }

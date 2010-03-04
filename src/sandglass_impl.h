@@ -31,9 +31,9 @@
 #ifdef SANDGLASS_TSC
 /* Read the time stamp counter */
 long sandglass_get_tsc();
-/* Get the timing resolution of the TSC */
-double sandglass_tsc_resolution();
-/* Get the necessary number of loops for SANDGLASS_REALTICKS */
+/* Get the frequency of the TSC */
+double sandglass_tsc_freq();
+/* Get the necessary number of loops for sandglass_bench_fine() */
 unsigned int sandglass_tsc_loops();
 #endif
 

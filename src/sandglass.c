@@ -24,130 +24,61 @@
 #include <time.h>
 #include <errno.h>
 
-static int sandglass_real_create(sandglass_t *sandglass,
-                                 const sandglass_attributes_t *attr);
-
-/* Create a timer */
 int
-sandglass_create(sandglass_t *sandglass,
-                 const sandglass_attributes_t *min,
-                 const sandglass_attributes_t *max)
+sandglass_init_introspective(sandglass_t *sandglass, sandglass_resolution_t res)
 {
-  sandglass_attributes_t realmin, realmax;
-
-  /* Get our real min and max values */
-
-  if (min)
-    realmin = *min;
-  else {
-    /* min defaults to { SANDGLASS_INTROSPECTIVE, SANDGLASS_SYSTEM } */
-    realmin.incrementation = SANDGLASS_INTROSPECTIVE;
-    realmin.resolution     = SANDGLASS_SYSTEM;
-  }
-
-  if (max)
-    realmax = *max;
-  else {
-    /* max defaults to the greater of min and { SANDGLASS_INTROSPECTIVE,
-       SANDGLASS_CPUTIME } */
-    if (realmin.incrementation > SANDGLASS_INTROSPECTIVE
-        || (realmin.incrementation == SANDGLASS_INTROSPECTIVE
-            && realmin.resolution > SANDGLASS_CPUTIME))
-      realmax = realmin;
-    else {
-      realmax.incrementation = SANDGLASS_INTROSPECTIVE;
-      realmax.resolution     = SANDGLASS_CPUTIME;
+  switch (res) {
+  case SANDGLASS_CPUTIME:
+    if (sysconf(_SC_THREAD_CPUTIME) > 0 || sysconf(_SC_CPUTIME) > 0) {
+      sandglass->freq  = 1e9;
+      sandglass->loops = 1;
+    } else {
+      errno = ENOTSUP;
+      return -1;
     }
-  }
+    break;
 
-  /* Ensure max >= min */
-  if (realmax.incrementation < realmin.incrementation
-      || (realmax.incrementation == realmin.incrementation
-          && realmax.resolution < realmin.resolution))
-  {
+  case SANDGLASS_SYSTEM:
+    sandglass->freq  = CLOCKS_PER_SEC;
+    sandglass->loops = 1;
+    break;
+
+  default:
     errno = EINVAL;
     return -1;
   }
 
-  /* Now search for available timers, starting from max */
-
-  while (sandglass_real_create(sandglass, &realmax) != 0) {
-    /* Once we reach the minimum attributes, bail out */
-    if (realmax.incrementation == realmin.incrementation
-        && realmax.resolution == realmin.resolution)
-    {
-      errno = ENOTSUP;
-      return -1;
-    }
-
-    /* Try the next lowest allowable settings */
-    if (realmax.resolution)
-      --realmax.resolution;
-    else {
-      if (realmax.incrementation) {
-        --realmax.incrementation;
-        realmax.resolution = SANDGLASS_CPUTIME;
-      } else {
-        errno = ENOTSUP;
-        return -1;
-      }
-    }
-  }
-
+  sandglass->incrementation = SANDGLASS_INTROSPECTIVE;
+  sandglass->resolution     = res;
   return 0;
 }
 
-static int
-sandglass_real_create(sandglass_t *sandglass,
-                      const sandglass_attributes_t *attr)
+int
+sandglass_init_monotonic(sandglass_t *sandglass, sandglass_resolution_t res)
 {
-  switch (attr->incrementation) {
-    case SANDGLASS_MONOTONIC:
-      switch (attr->resolution) {
-        case SANDGLASS_CPUTIME:
+  switch (res) {
+  case SANDGLASS_CPUTIME:
 #ifdef SANDGLASS_TSC
-          sandglass->resolution = sandglass_tsc_resolution();
-          sandglass->loops      = sandglass_tsc_loops();
-          break;
+    sandglass->freq  = sandglass_tsc_freq();
+    sandglass->loops = sandglass_tsc_loops();
+    break;
 #else
-          return -1;
+    errno = ENOTSUP;
+    return -1;
 #endif
 
-        case SANDGLASS_SYSTEM:
-          sandglass->resolution = 1e9;
-          sandglass->loops      = 1;
-          break;
+  case SANDGLASS_SYSTEM:
+    sandglass->freq  = 1e9;
+    sandglass->loops = 1;
+    break;
 
-        default:
-          return -1;
-      }
-      break;
-
-    case SANDGLASS_INTROSPECTIVE:
-      switch (attr->resolution) {
-        case SANDGLASS_CPUTIME:
-          if (sysconf(_SC_THREAD_CPUTIME) > 0 || sysconf(_SC_CPUTIME) > 0) {
-            sandglass->resolution = 1e9;
-            sandglass->loops      = 1;
-          } else
-            return -1;
-          break;
-
-        case SANDGLASS_SYSTEM:
-          sandglass->resolution = CLOCKS_PER_SEC;
-          sandglass->loops      = 1;
-          break;
-
-        default:
-          return -1;
-      }
-      break;
-
-    default:
-      return -1;
+  default:
+    errno = EINVAL;
+    return -1;
   }
 
-  sandglass->attributes = *attr;
+  sandglass->incrementation = SANDGLASS_MONOTONIC;
+  sandglass->resolution     = res;
   return 0;
 }
 
@@ -167,7 +98,7 @@ sandglass_elapse(sandglass_t *sandglass)
 {
   long oldgrains = sandglass->grains;
 
-  if (sandglass_real_gettime(sandglass) != 0)
+  if (sandglass_real_gettime(sandglass))
     return -1;
 
   sandglass->grains -= oldgrains;
@@ -185,14 +116,15 @@ sandglass_real_gettime(sandglass_t *sandglass)
   struct timespec ts;
   clock_t clock_ticks;
 
-  switch (sandglass->attributes.incrementation) {
+  switch (sandglass->incrementation) {
     case SANDGLASS_MONOTONIC:
-      switch (sandglass->attributes.resolution) {
+      switch (sandglass->resolution) {
         case SANDGLASS_CPUTIME:
 #ifdef SANDGLASS_TSC
           sandglass->grains = sandglass_get_tsc();
           break;
 #else
+          errno = ENOTSUP;
           return -1;
 #endif
 
@@ -209,12 +141,13 @@ sandglass_real_gettime(sandglass_t *sandglass)
           break;
 
         default:
+          errno = EINVAL;
           return -1;
       }
       break;
 
     case SANDGLASS_INTROSPECTIVE:
-      switch (sandglass->attributes.resolution) {
+      switch (sandglass->resolution) {
         case SANDGLASS_CPUTIME:
           if (sysconf(_SC_THREAD_CPUTIME) > 0) {
             if (clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts) != 0)
@@ -222,8 +155,10 @@ sandglass_real_gettime(sandglass_t *sandglass)
           } else if (sysconf(_SC_CPUTIME) > 0) {
             if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts) != 0)
               return -1;
-          } else
+          } else {
+            errno = EINVAL;
             return -1;
+          }
           sandglass->grains     = ts.tv_nsec;
           sandglass->adjustment = 1000000000L;
           break;
@@ -231,15 +166,17 @@ sandglass_real_gettime(sandglass_t *sandglass)
         case SANDGLASS_SYSTEM:
           if ((clock_ticks = clock()) == -1)
             return -1;
-          sandglass->grains = clock();
+          sandglass->grains = clock_ticks;
           break;
 
         default:
+          errno = EINVAL;
           return -1;
       }
       break;
 
     default:
+      errno = EINVAL;
       return -1;
   }
 
