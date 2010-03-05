@@ -46,6 +46,7 @@ main()
   if (i != 1) {
     fprintf(stderr,
             "sandglass_bench_noprecache() evaluated routine %d times!\n", i);
+    return EXIT_FAILURE;
   }
 
   printf("%.15g\n", sandglass.grains/sandglass.freq);
