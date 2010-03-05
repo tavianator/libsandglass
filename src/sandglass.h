@@ -123,6 +123,8 @@ int sandglass_elapse(sandglass_t *sandglass);
     /* Warm up the cache for these functions */                                \
     sandglass_begin(sandglass);                                                \
     sandglass_elapse(sandglass);                                               \
+    sandglass_begin(sandglass);                                                \
+    sandglass_elapse(sandglass);                                               \
                                                                                \
     /* Time an empty loop for our baseline */                                  \
     sandglass_begin(sandglass);                                                \
@@ -135,6 +137,7 @@ int sandglass_elapse(sandglass_t *sandglass);
     (sandglass)->baseline = (sandglass)->grains;                               \
                                                                                \
     /* Warm up the cache for our routine */                                    \
+    routine;                                                                   \
     routine;                                                                   \
                                                                                \
     /* Time our routine in a loop */                                           \
@@ -159,6 +162,8 @@ int sandglass_elapse(sandglass_t *sandglass);
     /* Warm up the cache for these functions */                                \
     sandglass_begin(sandglass);                                                \
     sandglass_elapse(sandglass);                                               \
+    sandglass_begin(sandglass);                                                \
+    sandglass_elapse(sandglass);                                               \
                                                                                \
     /* Time an empty routine for our baseline */                               \
     sandglass_begin(sandglass);                                                \
@@ -166,6 +171,7 @@ int sandglass_elapse(sandglass_t *sandglass);
     (sandglass)->baseline = (sandglass)->grains;                               \
                                                                                \
     /* Warm up the cache for our routine */                                    \
+    routine;                                                                   \
     routine;                                                                   \
                                                                                \
     /* Time the routine */                                                     \
@@ -181,6 +187,8 @@ int sandglass_elapse(sandglass_t *sandglass);
 #define sandglass_bench_noprecache(sandglass, routine)                         \
   do {                                                                         \
     /* Warm up the cache for these functions */                                \
+    sandglass_begin(sandglass);                                                \
+    sandglass_elapse(sandglass);                                               \
     sandglass_begin(sandglass);                                                \
     sandglass_elapse(sandglass);                                               \
                                                                                \
