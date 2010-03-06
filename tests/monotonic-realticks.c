@@ -36,9 +36,11 @@ main()
     return EXIT_FAILURE;
   }
 
+#if SANDGLASS_TSC
   sandglass_bench_fine(&sandglass, sandglass_get_tsc());
-
   printf("%ld\n", sandglass.grains);
-
   return EXIT_SUCCESS;
+#else
+  return EXIT_FAILURE;
+#endif
 }

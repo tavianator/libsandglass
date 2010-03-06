@@ -58,7 +58,7 @@ sandglass_init_monotonic(sandglass_t *sandglass, sandglass_resolution_t res)
 {
   switch (res) {
   case SANDGLASS_CPUTIME:
-#ifdef SANDGLASS_TSC
+#if SANDGLASS_TSC
     sandglass->freq  = sandglass_tsc_freq();
     sandglass->loops = sandglass_tsc_loops();
     break;
@@ -120,7 +120,7 @@ sandglass_real_gettime(sandglass_t *sandglass)
     case SANDGLASS_MONOTONIC:
       switch (sandglass->resolution) {
         case SANDGLASS_CPUTIME:
-#ifdef SANDGLASS_TSC
+#if SANDGLASS_TSC
           sandglass->grains = sandglass_get_tsc();
           break;
 #else

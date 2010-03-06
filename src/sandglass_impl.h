@@ -28,7 +28,7 @@
 #include "sandglass.h"
 #include <time.h>
 
-#ifdef SANDGLASS_TSC
+#if SANDGLASS_TSC
 /* Read the time stamp counter */
 long sandglass_get_tsc();
 /* Get the frequency of the TSC */

@@ -39,6 +39,8 @@ AC_TYPE_SIZE_T
 dnl Find out which assembly files to compile
 AC_CANONICAL_HOST
 
+tsc=0
+
 if echo $host_cpu | grep '86$' 2>&1 >/dev/null
 then
   arch_x86=1
@@ -54,8 +56,8 @@ fi
 AM_CONDITIONAL([X86], [test "$arch_x86"])
 AM_CONDITIONAL([X86_64], [test "$arch_x86_64"])
 
-AC_DEFINE([SANDGLASS_TSC], ["$tsc"])
-AM_CONDITIONAL([TSC], [test "$tsc"])
+AC_DEFINE_UNQUOTED([SANDGLASS_TSC], [$tsc])
+AM_CONDITIONAL([TSC], [test "$tsc" -ne 0])
 
 dnl Generate Makefiles
 AC_CONFIG_MACRO_DIR([m4])
