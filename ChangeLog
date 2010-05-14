@@ -1,3 +1,9 @@
+Version 0.3 (May 13, 2010)
+
+	- API- (but not ABI-) compatible update: sandglass_t::ticks is now
+	a signed type
+	- sandglass_bench*() macros now warm up the cache more
+
 Version 0.2 (March 4, 2010, commit b1201e5)
 
 	- Made the API way nicer.  No more sandglass_attributes_t.

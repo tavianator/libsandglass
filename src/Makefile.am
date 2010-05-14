@@ -38,7 +38,7 @@ if X86_64
   libsandglass_la_SOURCES += x86_64/tsc-x86_64.s
 endif
 
-libsandglass_la_LDFLAGS    = -version-info 1:0:0
+libsandglass_la_LDFLAGS    = -version-info 2:0:0
 libsandglass_la_LIBADD     = -lrt
 
 pkgconfigdir = $(libdir)/pkgconfig
