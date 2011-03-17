@@ -18,7 +18,7 @@
  * <http://www.gnu.org/licenses/>.                                       *
  *************************************************************************/
 
-#include "../src/sandglass_impl.h"
+#include "../src/sandglass-impl.h"
 #include "../src/sandglass.h"
 #include <unistd.h>
 #include <time.h>

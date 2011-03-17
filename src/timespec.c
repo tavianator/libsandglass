@@ -18,7 +18,7 @@
  * <http://www.gnu.org/licenses/>.                                       *
  *************************************************************************/
 
-#include "sandglass_impl.h"
+#include "sandglass-impl.h"
 #include "sandglass.h"
 #include <time.h>
 #include <unistd.h>
@@ -75,18 +75,18 @@ sandglass_timespec_sub(struct timespec *ts, const struct timespec *d)
 int
 sandglass_timespec_cmp(const struct timespec *a, const struct timespec *b)
 {
-  if (a->tv_sec > b->tv_sec)
+  if (a->tv_sec > b->tv_sec) {
     return 1;
-  else if (a->tv_sec == b->tv_sec) {
+  } else if (a->tv_sec == b->tv_sec) {
     if (a->tv_nsec > b->tv_nsec)
       return 1;
     else if (a->tv_nsec == b->tv_nsec)
       return 0;
     else
       return -1;
-  }
-  else
+  } else {
     return -1;
+  }
 }
 
 /* Spins for the time interval specified by ts */

@@ -18,7 +18,7 @@
  * <http://www.gnu.org/licenses/>.                                       *
  *************************************************************************/
 
-#include "sandglass_impl.h"
+#include "sandglass-impl.h"
 #include "sandglass.h"
 #include <unistd.h>
 #include <time.h>
@@ -164,7 +164,8 @@ sandglass_real_gettime(sandglass_t *sandglass)
           break;
 
         case SANDGLASS_SYSTEM:
-          if ((clock_ticks = clock()) == -1)
+          clock_ticks = clock();
+          if (clock_ticks == -1)
             return -1;
           sandglass->grains = clock_ticks;
           break;

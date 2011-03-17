@@ -22,7 +22,7 @@ lib_LTLIBRARIES = libsandglass.la
 nobase_include_HEADERS = sandglass.h
 
 libsandglass_la_SOURCES    = sandglass.h                                       \
-                             sandglass_impl.h                                  \
+                             sandglass-impl.h                                  \
                              sandglass.c                                       \
                              timespec.c
 
