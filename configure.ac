@@ -17,8 +17,10 @@ dnl License along with this program.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 
 AC_PREREQ(2.65)
-AC_INIT(The Sandglass Library, 0.3, tavianator@gmail.com, libsandglass)
-AM_INIT_AUTOMAKE([parallel-tests])
+AC_INIT([The Sandglass Library], [0.3], [tavianator@tavianator.com],
+        [libsandglass], [http://www.tavianator.com/libsandglass/])
+AM_INIT_AUTOMAKE([parallel-tests color-tests std-options])
+AM_SILENT_RULES([yes])
 
 dnl Programs
 AC_PROG_CC
